@@ -3,7 +3,10 @@
 <h1>Create Enrollment</h1>
 
 <form method="post" action="/enrollments/store" class="form-card">
-
+    <input
+    type="text"
+    name="website"
+    style="display:none">
     <div class="form-group">
         <label>Student ID</label>
         <input

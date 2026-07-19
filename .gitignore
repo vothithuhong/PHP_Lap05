@@ -1,5 +1,11 @@
-/vendor/
-/.idea/
-/.vscode/
-/.env
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+appsettings.Development.json
+
+node_modules/
+
 *.log

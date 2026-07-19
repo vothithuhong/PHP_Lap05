@@ -1,98 +1,226 @@
-<?php
-$title = $title ?? 'Products';
-$products = $products ?? [];
-$created = $created ?? false;
+<?php ob_start(); ?>
 
-function stockStatus(int $quantity): string
-{
-    if ($quantity <= 0) {
-        return 'Out of stock';
-    }
+<div class="dashboard-header">
 
-    if ($quantity <= 5) {
-        return 'Low stock';
-    }
+    <h1>
+        📚 Student Enrollment Management System
+    </h1>
 
-    return 'Available';
-}
+    <p class="subtitle">
+        Xin chào 
+        <b><?= e($_SESSION['user']['username'] ?? 'User') ?></b>
+        👋
+    </p>
 
-function stockClass(int $quantity): string
-{
-    if ($quantity <= 0) {
-        return 'danger';
-    }
+    <p class="description">
+        Hệ thống quản lý sinh viên và đăng ký khóa học.
+        Được xây dựng theo mô hình MVC, PDO và Repository Pattern.
+    </p>
 
-    if ($quantity <= 5) {
-        return 'warning';
-    }
+</div>
 
-    return 'success';
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($title) ?></title>
-    <link rel="stylesheet" href="/assets/style.css">
-</head>
-<body>
-    <header class="topbar">
-        <strong>PHP Mini Product Router</strong>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/products">Products</a>
-            <a href="/products/create">Create Product</a>
-            <a href="/health">Health</a>
-            <a href="/login">Login</a>
-        </nav>
-    </header>
 
-    <main class="container">
-        <?php if ($created): ?>
-            <div class="alert success">
-                Product form submitted successfully. Redirect response worked.
-            </div>
-        <?php endif; ?>
+<div class="grid">
 
-        <div class="page-header">
-            <div>
-                <h1>Product List</h1>
-                <p>This page is handled by ProductController@index.</p>
-            </div>
 
-            <a class="button" href="/products/create">Create Product</a>
+    <a href="/students" class="card">
+
+        <div class="icon">
+            👥
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+        <h2>
+            Quản lý sinh viên
+        </h2>
 
-            <tbody>
-                <?php foreach ($products as $product): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($product['sku']) ?></td>
-                        <td><?= htmlspecialchars($product['name']) ?></td>
-                        <td><?= htmlspecialchars($product['category']) ?></td>
-                        <td><?= number_format($product['price']) ?> VND</td>
-                        <td><?= htmlspecialchars((string) $product['quantity']) ?></td>
-                        <td>
-                            <span class="badge <?= stockClass((int) $product['quantity']) ?>">
-                                <?= stockStatus((int) $product['quantity']) ?>
-                            </span>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </main>
-</body>
-</html>
+        <p>
+            Thêm, xem, chỉnh sửa và xóa thông tin sinh viên.
+        </p>
+
+    </a>
+
+
+
+    <a href="/enrollments" class="card">
+
+        <div class="icon">
+            📝
+        </div>
+
+        <h2>
+            Đăng ký khóa học
+        </h2>
+
+        <p>
+            Quản lý danh sách đăng ký,
+            trạng thái và ngày đăng ký.
+        </p>
+
+    </a>
+
+
+
+
+    <a href="/health" class="card">
+
+        <div class="icon">
+            💚
+        </div>
+
+        <h2>
+            Kiểm tra hệ thống
+        </h2>
+
+        <p>
+            Kiểm tra database,
+            kết nối và trạng thái ứng dụng.
+        </p>
+
+    </a>
+
+
+
+
+    <a href="/students/create" class="card">
+
+        <div class="icon">
+            ➕
+        </div>
+
+        <h2>
+            Tạo mới
+        </h2>
+
+        <p>
+            Thêm sinh viên mới vào hệ thống.
+        </p>
+
+    </a>
+
+
+</div>
+
+
+
+<style>
+
+
+.dashboard-header{
+    margin-bottom:30px;
+}
+
+
+.dashboard-header h1{
+
+    font-size:32px;
+    color:#1e293b;
+
+}
+
+
+
+.subtitle{
+
+    margin-top:10px;
+    font-size:18px;
+    color:#475569;
+
+}
+
+
+
+.description{
+
+    margin-top:10px;
+    color:#64748b;
+
+}
+
+
+
+.grid{
+
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+}
+
+
+
+.card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    text-decoration:none;
+
+    color:#0f172a;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+    transition:.25s;
+
+}
+
+
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:#6366f1;
+
+}
+
+
+
+.icon{
+
+    font-size:40px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.card h2{
+
+    margin-bottom:10px;
+
+}
+
+
+
+.card p{
+
+    color:#64748b;
+
+    font-size:14px;
+
+}
+
+
+</style>
+
+
+<?php
+
+$content = ob_get_clean();
+
+$title = "Dashboard";
+
+$current = "dashboard";
+
+require __DIR__ . '/../layout.php';
+
+?>

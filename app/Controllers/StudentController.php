@@ -2,27 +2,41 @@
 
 class StudentController
 {
-    private function repository(): StudentRepository
+    public static function check(): void
     {
+        var_dump($_SESSION);
+        exit;
+
+        if (empty($_SESSION['user'])) {
+            $_SESSION['flash'] = 'Vui lòng đăng nhập.';
+            redirect('/login');
+            exit;
+        }
+    }
+    private function service(): StudentService
+    {
+        Auth::check();
         $config = require __DIR__ . '/../../config/database.php';
+
         $pdo = (new Database($config))->getConnection();
 
-        return new StudentRepository($pdo);
+        return new StudentService(
+            new StudentRepository($pdo)
+        );
     }
- 
-
 
     public function index(): void
     {
+        Auth::check();
         $q = trim($_GET['q'] ?? '');
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 10;
-        $sort = $_GET['sort'] ?? 'enroll_date';
+        $sort = $_GET['sort'] ?? 'created_at';
         $direction = $_GET['direction'] ?? 'desc';
         $offset = ($page - 1) * $perPage;
  
-        $repo = $this->repository();
-        $total = $repo->countAll($q);
+        $service = $this->service();
+        $total = $service->countAll($q);
         $totalPages = max(1, (int) ceil($total / $perPage));
  
         if ($page > $totalPages) {
@@ -30,13 +44,14 @@ class StudentController
             $offset = ($page - 1) * $perPage;
         }
  
-        $students = $repo->getPaginated($q, $perPage, $offset, $sort, $direction);
+        $students = $service->getPaginated($q, $perPage, $offset, $sort, $direction);
  
         view('Students/index', compact('students', 'q', 'page', 'perPage', 'total', 'totalPages', 'sort', 'direction'));
     }
  
     public function create(): void
     {
+        Auth::check();
         $errors = [];
         $old = ['name' => '', 'email' => '', 'phone' => '', 'status' => 'new', 'note' => ''];
         view('Students/create', compact('errors', 'old'));
@@ -44,6 +59,12 @@ class StudentController
  
     public function store(): void
     {
+        if (!empty($_POST['website'])) {
+
+            die('Spam detected');
+
+        }
+        Auth::check();
         $data = $this->validate($_POST);
         $errors = $data['errors'];
         $old = $data['values'];
@@ -54,7 +75,7 @@ class StudentController
         }
  
         try {
-            $this->repository()->create($data['values']);
+            $this->service()->create($data['values']);
             flash_set('success', 'student created successfully.');
             redirect('/students');
         } catch (DuplicateRecordException $e) {
@@ -69,11 +90,12 @@ class StudentController
  
     private function validate(array $input): array
     {
+        Auth::check();
         $values = [
             'full_name' => trim($input['full_name'] ?? ''),
             'email' => trim($input['email'] ?? ''),
             'phone' => trim($input['phone'] ?? ''),
-        ];
+        ];  
 
         $errors = [];
 
@@ -95,9 +117,10 @@ class StudentController
 
     public function update(): void
     {
+        Auth::check();
         $id = (int) ($_GET['id'] ?? 0);
 
-        $student = $this->repository()->findById($id);
+        $student = $this->service()->findById($id);
 
         if (!$student) {
             http_response_code(404);
@@ -118,7 +141,7 @@ class StudentController
 
         try {
 
-            $this->repository()->update(
+            $this->service()->update(
                 $id,
                 $data['values']
             );
@@ -154,11 +177,12 @@ class StudentController
 
     public function delete(): void
     {
+        Auth::check();
         $id = (int) ($_POST['id'] ?? 0);
 
         try {
 
-            $this->repository()->delete($id);
+            $this->service()->delete($id);
 
             flash_set(
                 'success',
@@ -179,9 +203,10 @@ class StudentController
     
     public function edit(): void
     {
+        Auth::check();
         $id = (int) ($_GET['id'] ?? 0);
 
-        $student = $this->repository()->findById($id);
+        $student = $this->service()->findById($id);
 
         if (!$student) {
             http_response_code(404);

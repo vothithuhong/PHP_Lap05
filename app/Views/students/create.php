@@ -2,7 +2,12 @@
 <h1>Create Student</h1>
 
 <form method="post" action="/students/store" class="card form-card">
-
+    <input
+    type="text"
+    name="website"
+    style="display:none"
+    autocomplete="off">
+    
     <label>Full Name</label>
     <input type="text" name="full_name" value="<?= e($old['full_name'] ?? '') ?>">
     <?php if (!empty($errors['full_name'])): ?>
